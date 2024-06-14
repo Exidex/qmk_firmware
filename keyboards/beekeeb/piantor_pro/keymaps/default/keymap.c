@@ -16,6 +16,17 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     NULL // terminate the array
 };
 
+const uint16_t PROGMEM combo_cut[] = {KC_E, KC_R, COMBO_END};
+const uint16_t PROGMEM combo_copy[] = {KC_D, KC_F, COMBO_END};
+const uint16_t PROGMEM combo_paste[] = {KC_C, KC_V, COMBO_END};
+const uint16_t PROGMEM copy_undo[] = {KC_W, KC_E, COMBO_END};
+combo_t key_combos[] = {
+    COMBO(combo_copy, LCTL(KC_C)),
+    COMBO(combo_cut, LCTL(KC_X)),
+    COMBO(combo_paste, LCTL(KC_V)),
+    COMBO(copy_undo, LCTL(KC_Z)),
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [DEFAULT_LAYER] = LAYOUT_split_3x6_3(
         KC_TAB,      KC_Q,         KC_W,          KC_E,         KC_R,            KC_T,                               KC_Y,    KC_U,         KC_I,         KC_O,         KC_P,            KC_RALT,
