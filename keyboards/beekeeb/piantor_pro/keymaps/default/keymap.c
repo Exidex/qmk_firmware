@@ -22,7 +22,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,      KC_Q,         KC_W,          KC_E,         KC_R,            KC_T,                               KC_Y,    KC_U,         KC_I,         KC_O,         KC_P,            KC_RALT,
         KC_ESCAPE,   KC_A,         KC_S,          KC_D,         KC_F,            KC_G,                               KC_H,    KC_J,         KC_K,         KC_L,         KC_SCLN,         KC_INS,
         KC_LSFT,     KC_Z,         KC_X,          KC_C,         KC_V,            KC_B,                               KC_N,    KC_M,         KC_COMM,      KC_DOT,       KC_SLSH,         KC_RSFT,
-                                                MO(SYMBOL_LAYER),   MO(NAV_LAYER),   BSPC_OR_DEL,                 KC_SPC, KC_ENT, MO(NUM_LAYER)
+                                                OSL(SYMBOL_LAYER),   MO(NAV_LAYER),   BSPC_OR_DEL,                 KC_SPC, KC_ENT, OSL(NUM_LAYER)
     ),
 
     [NAV_LAYER] = LAYOUT_split_3x6_3(
@@ -36,14 +36,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NO,     KC_EXLM,         KC_AT,           KC_LBRC,        KC_RBRC,         KC_PERC,                     KC_CIRC,   KC_LPRN,  KC_RPRN,    KC_UNDS,    KC_PLUS,   KC_NO,
         KC_NO,   OSM(MOD_LGUI),   OSM(MOD_LALT),   OSM(MOD_LCTL),  OSM(MOD_LSFT),   KC_BSLS,                     KC_QUOT,   KC_AMPR,  KC_ASTR,    KC_EQL,     KC_MINUS,  KC_NO,
         KC_NO,      KC_HASH,         KC_DLR,          KC_LT,          KC_GT,           KC_PIPE,                     KC_DQUO,   KC_LCBR,  KC_RCBR,    KC_GRV,      KC_TILDE,     KC_NO,
-                                                                                 KC_NO, KC_NO, KC_NO,           KC_NO, KC_NO, MO(FN_LAYER)
+                                                                                 KC_NO, KC_NO, KC_NO,           KC_NO, KC_NO, OSL(FN_LAYER)
     ),
 
     [NUM_LAYER] = LAYOUT_split_3x6_3(
         KC_NO,        KC_NO,    KC_7,    KC_8,    KC_9,    KC_NO,                           KC_NO,    KC_NO,         KC_NO,          KC_NO,          KC_NO,           KC_NO,
         KC_NO,        KC_NO,    KC_4,    KC_5,    KC_6,    KC_0,                            KC_NO,    OSM(MOD_RSFT), OSM(MOD_RCTL),  OSM(MOD_LALT),  OSM(MOD_RGUI),   KC_NO,
         KC_NO,        KC_NO,    KC_1,    KC_2,    KC_3,    KC_NO,                           KC_NO,    KC_NO,         KC_NO,          KC_NO,          KC_NO,           KC_NO,
-                                                    MO(FN_LAYER), KC_NO, KC_NO,           KC_NO, KC_NO, KC_NO
+                                                    OSL(FN_LAYER), KC_NO, KC_NO,           KC_NO, KC_NO, KC_NO
     ),
 
     [FN_LAYER] = LAYOUT_split_3x6_3(
@@ -54,3 +54,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
 };
+
+void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (IS_QK_ONE_SHOT_MOD(keycode) && is_oneshot_layer_active() && record->event.pressed) {
+        clear_oneshot_layer_state(ONESHOT_OTHER_KEY_PRESSED);
+    }
+
+    return;
+}
