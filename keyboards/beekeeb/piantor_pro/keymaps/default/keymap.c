@@ -6,15 +6,13 @@ enum layers {
     DEFAULT_LAYER,
     NAV_LAYER,
     SYMBOL_LAYER,
-    NUM_LAYER,
     FN_LAYER,
+    MOD_LAYER,
 };
 
 enum keycodes {
     // Custom oneshot layer implementation.
-    OSL_NUM_LAYER = SAFE_RANGE,
-    OSL_SYMBOL_LAYER,
-    OSL_FN_LAYER,
+    OSL_MOD_LAYER = SAFE_RANGE,
 
     // Custom oneshot mods implementation.
     OSM_SHFT,
@@ -39,31 +37,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESCAPE,   KC_A,         KC_S,          KC_D,         KC_F,            KC_G,                               KC_H,    KC_J,         KC_K,         KC_L,         KC_SCLN,         KC_INS,
         KC_LSFT,     KC_Z,         KC_X,          KC_C,         KC_V,            KC_B,                               KC_N,    KC_M,         KC_COMM,      KC_DOT,       KC_SLSH,         KC_RSFT,
 
-        OSL_SYMBOL_LAYER,   MO(NAV_LAYER),   BSPC_OR_DEL,                 KC_SPC, KC_ENT, OSL_NUM_LAYER
+        OSL_MOD_LAYER,   MO(NAV_LAYER),   BSPC_OR_DEL,                 KC_SPC, MO(SYMBOL_LAYER), KC_ENT
     ),
 
     [NAV_LAYER] = LAYOUT_split_3x6_3(
         XXXXXXX,  XXXXXXX,      C(S(KC_TAB)),    KC_UP,      C(KC_TAB),   KC_PGUP,                               XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
-        XXXXXXX,  KC_HOME,      KC_LEFT,         KC_DOWN,    KC_RIGHT,    KC_END,                                XXXXXXX,    KC_RSFT,       KC_RCTL,  KC_LALT,  KC_RGUI,  XXXXXXX,
+        XXXXXXX,  KC_HOME,      KC_LEFT,         KC_DOWN,    KC_RIGHT,    KC_END,                                XXXXXXX,    KC_RSFT,       KC_RCTL,    KC_LALT,    KC_RGUI,    XXXXXXX,
         XXXXXXX,  XXXXXXX,      S(KC_TAB),       KC_APP,     KC_TAB,      KC_PGDN,                               XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
 
-        XXXXXXX, XXXXXXX, XXXXXXX,                XXXXXXX, KC_LEFT_GUI, XXXXXXX
+        XXXXXXX, XXXXXXX, XXXXXXX,                XXXXXXX, MO(FN_LAYER), KC_LEFT_GUI
     ),
 
     [SYMBOL_LAYER] = LAYOUT_split_3x6_3(
-        XXXXXXX,     KC_EXLM,     KC_AT,      KC_LBRC,    KC_RBRC,    KC_PERC,                     KC_CIRC,   KC_LPRN,  KC_RPRN,    KC_UNDS,    KC_PLUS,    XXXXXXX,
-        XXXXXXX,     OSM_GUI,     OSM_ALT,    OSM_CTRL,   OSM_SHFT,   KC_BSLS,                     KC_QUOT,   KC_AMPR,  KC_ASTR,    KC_EQL,     KC_MINUS,   XXXXXXX,
-        XXXXXXX,     KC_HASH,     KC_DLR,     KC_LT,      KC_GT,      KC_PIPE,                     KC_DQUO,   KC_LCBR,  KC_RCBR,    KC_GRV,     KC_TILDE,   XXXXXXX,
+        KC_EXLM,    KC_AT,       KC_7,    KC_8,    KC_9,    KC_AMPR,                             KC_GRV,    KC_LPRN,  KC_RPRN,    KC_LCBR,    KC_RCBR,    KC_PIPE,
+        KC_HASH,    KC_DLR,      KC_4,    KC_5,    KC_6,    KC_0,                                KC_QUOT,   KC_LBRC,  KC_RBRC,    KC_LT,      KC_GT,      KC_TILDE,
+        KC_PERC,    KC_CIRC,     KC_1,    KC_2,    KC_3,    KC_ASTR,                             KC_DQUO,   KC_UNDS,  KC_PLUS,    KC_EQL,     KC_BSLS,    KC_MINUS,
 
-        OSL_SYMBOL_LAYER,  XXXXXXX, XXXXXXX,                XXXXXXX, XXXXXXX, OSL_FN_LAYER
-    ),
-
-    [NUM_LAYER] = LAYOUT_split_3x6_3(
-        XXXXXXX,   XXXXXXX,    KC_7,    KC_8,    KC_9,    XXXXXXX,                           XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX,          XXXXXXX,           XXXXXXX,
-        XXXXXXX,   XXXXXXX,    KC_4,    KC_5,    KC_6,    KC_0,                              XXXXXXX,    OSM_SHFT,   OSM_CTRL,  OSM_ALT,  OSM_GUI,   XXXXXXX,
-        XXXXXXX,   XXXXXXX,    KC_1,    KC_2,    KC_3,    XXXXXXX,                           XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX,          XXXXXXX,           XXXXXXX,
-
-        OSL_FN_LAYER, XXXXXXX, XXXXXXX,           XXXXXXX, XXXXXXX, OSL_NUM_LAYER
+        XXXXXXX,  MO(FN_LAYER), XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX
     ),
 
     [FN_LAYER] = LAYOUT_split_3x6_3(
@@ -71,16 +61,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_AUDIO_MUTE,      OSM_GUI,                  OSM_ALT,      OSM_CTRL,     OSM_SHFT,               XXXXXXX,                      KC_F11,    KC_F4,    KC_F5,    KC_F6,    XXXXXXX,    XXXXXXX,
         XXXXXXX,            KC_MEDIA_PLAY_PAUSE,      XXXXXXX,      XXXXXXX,      KC_AUDIO_VOL_DOWN,      KC_AUDIO_VOL_UP,              KC_F10,    KC_F1,    KC_F2,    KC_F3,    XXXXXXX,    XXXXXXX,
 
-        OSL_FN_LAYER, XXXXXXX, XXXXXXX,                XXXXXXX, XXXXXXX, OSL_FN_LAYER
+        XXXXXXX, XXXXXXX, XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX
+    ),
+
+    [MOD_LAYER] = LAYOUT_split_3x6_3(
+        _______,    _______,    _______,    _______,    _______,    _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    OSM_GUI,    OSM_ALT,    OSM_CTRL,   OSM_SHFT,   _______,            _______,    OSM_SHFT,   OSM_CTRL,   OSM_ALT,    OSM_GUI,    _______,
+        _______,    _______,    _______,    _______,    _______,    _______,            _______,    _______,    _______,    _______,    _______,    _______,
+
+        OSL_MOD_LAYER, _______, _______,                _______, _______, _______
     ),
 };
 
 // ================
 
-void keyboard_post_init_user(void) {
-    debug_enable   = true;
-    debug_keyboard = true;
-}
+//void keyboard_post_init_user(void) {
+//    debug_enable   = true;
+//    debug_keyboard = true;
+//}
 
 // ================ mostly callum's oneshot mods
 
@@ -97,9 +95,9 @@ oneshot_mod_state osm_alt_state = osm_up_unqueued;
 oneshot_mod_state osm_gui_state = osm_up_unqueued;
 
 bool is_oneshot_cancel_key(uint16_t keycode) {
-    switch (keycode) { // whole thumb clusters
-        case OSL_SYMBOL_LAYER:
-        case OSL_NUM_LAYER:
+    switch (keycode) {
+        case OSL_MOD_LAYER: // cancel on double tap
+//        case MO(SYMBOL_LAYER):
 //        case MO(NAV_LAYER):
 //        case BSPC_OR_DEL:
 //        case KC_SPC:
@@ -112,8 +110,7 @@ bool is_oneshot_cancel_key(uint16_t keycode) {
 
 bool is_oneshot_ignored_key(uint16_t keycode) {
     switch (keycode) {
-        case OSL_SYMBOL_LAYER:
-        case OSL_NUM_LAYER:
+        case OSL_MOD_LAYER:
         case OSM_SHFT:
         case OSM_CTRL:
         case OSM_ALT:
@@ -165,7 +162,7 @@ void update_oneshot(
             }
         } else {
             if (!is_oneshot_ignored_key(keycode)) {
-                // On non-ignored keyup, consider the oneshot used.
+                // On non-ignored keyup, mark the oneshot as used.
                 switch (*state) {
                     case osm_down_unused:
                         *state = osm_down_used;
@@ -236,13 +233,14 @@ void update_oneshot_layer(
         } else {
             if (IS_LAYER_ON(layer)) {
                 if (is_oneshot_mod_key(keycode)) {
+                    // if mod
+                    // track pressed and released mods
                     pressed_one_shot_mods &= CUSTOM_ONE_SHOT_MOD_GET_MODS(~(CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode)));
 
-                    // track pressed and released mods
                     if (pressed_one_shot_mods) {
                         // ignore
                     } else {
-                        // if mod, wait until last (in a chord) mod is release
+                        // wait until last (in a chord) mod is release
                         layer_off(layer);
 //                        uprintf("0x%04X layer_off mods\n", keycode);
                     }
@@ -292,25 +290,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         record
     );
 
-
-    update_oneshot_layer(
-        &osl_num_state,
-        OSL_NUM_LAYER,
-        NUM_LAYER,
-        keycode,
-        record
-    );
     update_oneshot_layer(
         &osl_sym_state,
-        OSL_SYMBOL_LAYER,
-        SYMBOL_LAYER,
-        keycode,
-        record
-    );
-    update_oneshot_layer(
-        &osl_fn_state,
-        OSL_FN_LAYER,
-        FN_LAYER,
+        OSL_MOD_LAYER,
+        MOD_LAYER,
         keycode,
         record
     );
