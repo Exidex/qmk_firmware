@@ -1,62 +1,62 @@
 layout: {qmk_keyboard: beekeeb/piantor_pro, qmk_layout: LAYOUT_split_3x6_3}
 layers:
   DEFAULT:
-  - [TAB, Q, W, E, R, T]
-  - [Y, U, I, O, P, RALT]
-  - [ESC, A, S, D, F, G]
-  - [H, J, K, L, ';', INS]
-  - [LSFT, Z, X, C, V, B]
-  - [N, M, ',', '.', '/', RSFT]
-  - [SYM, NAV, "BSPC DEL", SPACE, ENTER, NUM]
+    - [TAB, Q, W, E, R, T]
+    - [Y, U, I, O, P, RALT]
+    - [ESC, A, S, D, F, G]
+    - [H, J, K, L, ';', INS]
+    - [LSFT, Z, X, C, V, B]
+    - [N, M, ',', '.', '/', RSFT]
+    - [MOD, NAV, "BSPC DEL", SPACE, SYM, ENTER]
   NAV:
-  - ['', '', PREV_TAB, UP, NEXT_TAB, PG_UP]
-  - ['', '', '', '', '', '']
-  - ['', HOME, LEFT, DOWN, RIGHT, END]
-  - ['', RSHFT, RGHT, LALT, RGUI, '']
-  - ['', '', PREV_FIELD, C_MENU, NEXT_FIELD, PG_DOWN]
-  - ['', '', '', '', '', '']
-  - - ''
-    - {type: held}
-    - ''
-    - ''
-    - LGUI
-    - ''
+    - ['', '', PREV_TAB, UP, NEXT_TAB, PG_UP]
+    - ['', '', '', '', '', '']
+    - ['', HOME, LEFT, DOWN, RIGHT, END]
+    - ['', RSHFT, RGHT, LALT, RGUI, '']
+    - ['', '', PREV_FIELD, C_MENU, NEXT_FIELD, PG_DOWN]
+    - ['', '', '', '', '', '']
+    - - ''
+      - {type: held}
+      - ''
+      - ''
+      - FN
+      - LGUI
   SYM:
-  - ['', '!', '@', '[', ']', '%']
-  - ['^', '(', ')', '_', '+', '']
-  - ['', 'LGUI', 'LALT', 'LCTL', 'LSFT', '\']
-  - ['''', '&', '*', '=', '-', '']
-  - ['', '#', '$', '<', '>', '|']
-  - ['"', '{', '}', '`', '~', '']
-  - - {type: held}
-    - ''
-    - ''
-    - ''
-    - ''
-    - FN
-  NUM:
-  - ['', '', '7', '8', '9', '']
-  - ['', '', '', '', '', '']
-  - ['', '',  '4', '5', '6', '0']
-  - ['', RSHFT, RGHT, LALT, RGUI, '']
-  - ['', '', '1', '2', '3', '']
-  - ['', '', '', '', '', '']
-  - - FN
-    - ''
-    - ''
-    - ''
-    - ''
-    - {type: held}
+    - ['!', '@', '7', '8', '9', '&']
+    - ['`', '(', ')', '{', '}', '|']
+    - ['#', '$', '4', '5', '6', '0']
+    - ['''', '[', ']', '<', '>', '~']
+    - ['%', '^', '1', '2', '3', '*']
+    - ['"', '_', '+', '=', '\', '-']
+    - - ''
+      - FN
+      - ''
+      - ''
+      - {type: held}
+      - ''
   FN:
-  - ['', 'STOP', '', '', 'PREV_TRACK', 'NEXT_TRACK']
-  - ['F12', 'F7', 'F8', 'F9', '', 'QK BOOT']
-  - ['MUTE', 'LGUI', 'LALT', 'LCTL', 'LSFT', '']
-  - ['F11', 'F4', 'F5', 'F6', '', '']
-  - ['', 'PAUSE', '', '', 'VOL_DOWN', 'VOL_UP']
-  - ['F10', 'F1', 'F2', 'F3', '', '']
-  - - {type: held}
-    - ''
-    - ''
-    - ''
-    - ''
-    - {type: held}
+    - ['', 'STOP', '', '', 'PREV_TRACK', 'NEXT_TRACK']
+    - ['F12', 'F7', 'F8', 'F9', '', 'QK BOOT']
+    - ['MUTE', 'OSM_GUI', 'OSM_ALT', 'OSM_CTRL', 'OSM_SHFT', '']
+    - ['F11', 'F4', 'F5', 'F6', '', '']
+    - ['', 'PAUSE', '', '', 'VOL_DOWN', 'VOL_UP']
+    - ['F10', 'F1', 'F2', 'F3', '', '']
+    - - ''
+      - {type: held}
+      - ''
+      - ''
+      - {type: held}
+      - ''
+  MOD:
+    - ['', '', '', '', '', '']
+    - ['', '', '', '', '', '']
+    - ['', 'OSM_GUI', 'OSM_ALT', 'OSM_CTRL', 'OSM_SHFT', '']
+    - ['', 'OSM_SHFT', 'OSM_CTRL', 'OSM_ALT', 'OSM_GUI', '']
+    - ['', '', '', '', '', '']
+    - ['', '', '', '', '', '']
+    - - {type: held}
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
