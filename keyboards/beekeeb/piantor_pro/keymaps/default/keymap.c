@@ -244,12 +244,14 @@ void update_oneshot_layer(
                 pressed_one_shot_mods |= CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode);
             }
         } else {
+            if (is_oneshot_mod_key(keycode)) {
+                pressed_one_shot_mods &= CUSTOM_ONE_SHOT_MOD_GET_MODS(~(CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode)));
+            }
+
             switch (*layer_state) {
                 case osl_down_pending_used:
                 case osl_down_unused:
                     if (is_oneshot_mod_key(keycode)) {
-                        pressed_one_shot_mods &= CUSTOM_ONE_SHOT_MOD_GET_MODS(~(CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode)));
-
                         if (pressed_one_shot_mods) {
                             *layer_state = osl_down_pending_used;
                         } else {
@@ -260,8 +262,6 @@ void update_oneshot_layer(
                 case osl_up_queued:
                 case osl_up_pending_used:
                     if (is_oneshot_mod_key(keycode)) {
-                        pressed_one_shot_mods &= CUSTOM_ONE_SHOT_MOD_GET_MODS(~(CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode)));
-
                         if (pressed_one_shot_mods) {
                             *layer_state = osl_up_pending_used;
                         } else {
