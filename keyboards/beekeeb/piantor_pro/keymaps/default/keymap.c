@@ -53,7 +53,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_HASH,    KC_DLR,      KC_4,    KC_5,    KC_6,    KC_0,                                KC_QUOT,   KC_LBRC,  KC_RBRC,    KC_LT,      KC_GT,      KC_TILDE,
         KC_PERC,    KC_CIRC,     KC_1,    KC_2,    KC_3,    KC_ASTR,                             KC_DQUO,   KC_UNDS,  KC_PLUS,    KC_EQL,     KC_BSLS,    KC_MINUS,
 
-        XXXXXXX,  MO(FN_LAYER), XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX
+        OSL_MOD_LAYER,  MO(FN_LAYER), XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX
     ),
 
     [FN_LAYER] = LAYOUT_split_3x6_3(
