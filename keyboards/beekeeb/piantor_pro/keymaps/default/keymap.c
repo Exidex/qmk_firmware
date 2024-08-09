@@ -83,10 +83,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ================ mostly callum's oneshot mods
 
 typedef enum {
+    osl_up_unqueued, // default, waiting for layer to be pressed
+    osl_up_queued, // layer pressed and released without pressing mod key, next modifier press will have layer enabled, on all mod release layer will be disabled
+    osl_up_pending_used, // layer was pressed but released when some mods were still held, on all mod release layer will be disabled
+    osl_down_unused, // layer pressed and held, all mod presses will have layer enabled, until all mods are released
+    osl_down_pending_used, // layer pressed and held, some mods are still pressed
+    osl_down_used, // mods were pressed but layer is still held, on layer release layer will be disabled
+} oneshot_layer_state;
+
+typedef enum {
     osm_up_unqueued, // default, waiting for mod to be pressed
     osm_down_unused, // mod pressed and held, all other presses will be with this modifier enabled, until mod released
     osm_down_used, // other key pressed while mod is held, on mod release modifier will be disabled
     osm_up_queued, // mod pressed and released without pressing other key, next press will have modifier enabled
+    osm_up_queued_with_layer, // other key pressed while layer and mod are active, next presses will have modifier enabled until layer is released
 } oneshot_mod_state;
 
 oneshot_mod_state osm_shift_state = osm_up_unqueued;
@@ -122,6 +132,7 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
 }
 
 void update_oneshot_mod(
+    oneshot_layer_state *layer_state,
     oneshot_mod_state *mod_state,
     uint16_t mod,
     uint16_t trigger,
@@ -168,9 +179,18 @@ void update_oneshot_mod(
                         *mod_state = osm_down_used;
                         break;
                     case osm_up_queued:
-                        *mod_state = osm_up_unqueued;
-                        unregister_code(mod);
-//                        uprintf("0x%04X unregister_code up non-trigger\n", keycode);
+                        switch (*layer_state) {
+                            case osl_up_pending_used: // because some other mod is still pressed
+                            case osl_down_unused:
+                            case osl_down_pending_used:
+                            case osl_down_used:
+                                *mod_state = osm_up_queued_with_layer;
+                                break;
+                            default:
+                                *mod_state = osm_up_unqueued;
+                                unregister_code(mod);
+                                break;
+                        }
                         break;
                     default:
                         break;
@@ -181,15 +201,6 @@ void update_oneshot_mod(
 }
 
 // ================ my oneshot layers
-
-typedef enum {
-    osl_up_unqueued, // default, waiting for layer to be pressed
-    osl_up_queued, // layer pressed and released without pressing mod key, next modifier press will have layer enabled, on all mod release layer will be disabled
-    osl_up_pending_used, // layer was pressed but released when some mods were still held, on all mod release layer will be disabled
-    osl_down_unused, // layer pressed and held, all mod presses will have layer enabled, until all mods are released
-    osl_down_pending_used, // layer pressed and held, some mods are still pressed
-    osl_down_used, // mods were pressed but layer is still held, on layer release layer will be disabled
-} oneshot_layer_state;
 
 oneshot_layer_state osl_mod_state = osl_up_unqueued;
 
@@ -211,6 +222,10 @@ bool is_oneshot_mod_key(uint16_t keycode) {
 
 void update_oneshot_layer(
     oneshot_layer_state *layer_state,
+    oneshot_mod_state *shift_state,
+    oneshot_mod_state *ctrl_state,
+    oneshot_mod_state *alt_state,
+    oneshot_mod_state *gui_state,
     uint16_t trigger,
     uint16_t layer,
     uint16_t keycode,
@@ -230,6 +245,26 @@ void update_oneshot_layer(
                 case osl_down_used:
                     *layer_state = osl_up_unqueued;
                     layer_off(layer);
+
+                    {
+                        if (*shift_state == osm_up_queued_with_layer) {
+                            *shift_state = osm_up_unqueued;
+                            unregister_code(KC_LSFT);
+                        }
+                        if (*ctrl_state == osm_up_queued_with_layer) {
+                            *ctrl_state = osm_up_unqueued;
+                            unregister_code(KC_LCTL);
+                        }
+                        if (*alt_state == osm_up_queued_with_layer) {
+                            *alt_state = osm_up_unqueued;
+                            unregister_code(KC_LALT);
+                        }
+                        if (*gui_state == osm_up_queued_with_layer) {
+                            *gui_state = osm_up_unqueued;
+                            unregister_code(KC_LGUI);
+                        }
+                    }
+
                     break;
                 case osl_down_pending_used:
                     *layer_state = osl_up_pending_used;
@@ -283,6 +318,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 //    uprintf("keycode 0x%04X pressed: %d\n", keycode, record->event.pressed);
 
     update_oneshot_mod(
+        &osl_mod_state,
         &osm_shift_state,
         KC_LSFT,
         OSM_SHFT,
@@ -290,6 +326,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         record
     );
     update_oneshot_mod(
+        &osl_mod_state,
         &osm_ctrl_state,
         KC_LCTL,
         OSM_CTRL,
@@ -297,6 +334,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         record
     );
     update_oneshot_mod(
+        &osl_mod_state,
         &osm_alt_state,
         KC_LALT,
         OSM_ALT,
@@ -304,6 +342,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         record
     );
     update_oneshot_mod(
+        &osl_mod_state,
         &osm_gui_state,
         KC_LGUI,
         OSM_GUI,
@@ -313,6 +352,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     update_oneshot_layer(
         &osl_mod_state,
+        &osm_shift_state,
+        &osm_ctrl_state,
+        &osm_alt_state,
+        &osm_gui_state,
         OSL_MOD_LAYER,
         MOD_LAYER,
         keycode,
