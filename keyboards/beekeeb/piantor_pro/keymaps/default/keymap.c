@@ -183,11 +183,15 @@ void update_oneshot_mod(
 // ================ my oneshot layers
 
 typedef enum {
-    osl_up,
-    osl_down,
+    osl_up_unqueued, // default, waiting for layer to be pressed
+    osl_up_queued, // layer pressed and released without pressing mod key, next modifier press will have layer enabled, on all mod release layer will be disabled
+    osl_up_pending_used, // layer was pressed but released when some mods were still held, on all mod release layer will be disabled
+    osl_down_unused, // layer pressed and held, all mod presses will have layer enabled, until all mods are released
+    osl_down_pending_used, // layer pressed and held, some mods are still pressed
+    osl_down_used, // mods were pressed but layer is still held, on layer release layer will be disabled
 } oneshot_layer_state;
 
-oneshot_layer_state osl_mod_state = osl_up;
+oneshot_layer_state osl_mod_state = osl_up_unqueued;
 
 uint16_t pressed_one_shot_mods = 0;
 
@@ -214,41 +218,60 @@ void update_oneshot_layer(
 ) {
     if (keycode == trigger) {
         if (record->event.pressed) {
-            // enable layer
-            layer_on(layer);
-            *layer_state = osl_down;
-//            uprintf("0x%04X layer_on\n", keycode);
+            if (*layer_state == osl_up_unqueued) {
+                layer_on(layer);
+            }
+            *layer_state = osl_down_unused;
         } else {
-            // remember state
-            *layer_state = osl_up;
+            switch (*layer_state) {
+                case osl_down_unused:
+                    *layer_state = osl_up_queued;
+                    break;
+                case osl_down_used:
+                    *layer_state = osl_up_unqueued;
+                    layer_off(layer);
+                    break;
+                case osl_down_pending_used:
+                    *layer_state = osl_up_pending_used;
+                    break;
+                default:
+                    break;
+            }
         }
     } else {
         if (record->event.pressed) {
-            // remember pressed mods
             if (is_oneshot_mod_key(keycode)) {
                 pressed_one_shot_mods |= CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode);
             }
         } else {
-            if (IS_LAYER_ON(layer)) {
-                if (is_oneshot_mod_key(keycode)) {
-                    // if mod
-                    // track pressed and released mods
-                    pressed_one_shot_mods &= CUSTOM_ONE_SHOT_MOD_GET_MODS(~(CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode)));
+            switch (*layer_state) {
+                case osl_down_pending_used:
+                case osl_down_unused:
+                    if (is_oneshot_mod_key(keycode)) {
+                        pressed_one_shot_mods &= CUSTOM_ONE_SHOT_MOD_GET_MODS(~(CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode)));
 
-                    if (pressed_one_shot_mods) {
-                        // ignore
-                    } else {
-                        // wait until last (in a chord) mod is release
-                        layer_off(layer);
-//                        uprintf("0x%04X layer_off mods\n", keycode);
+                        if (pressed_one_shot_mods) {
+                            *layer_state = osl_down_pending_used;
+                        } else {
+                            *layer_state = osl_down_used;
+                        }
                     }
-                } else {
-                    // if non-mod, disable layer if key is up
-                    if (*layer_state == osl_up) {
-                        layer_off(layer);
-//                        uprintf("0x%04X layer_off non-mods\n", keycode);
+                    break;
+                case osl_up_queued:
+                case osl_up_pending_used:
+                    if (is_oneshot_mod_key(keycode)) {
+                        pressed_one_shot_mods &= CUSTOM_ONE_SHOT_MOD_GET_MODS(~(CUSTOM_ONE_SHOT_MOD_GET_MODS(keycode)));
+
+                        if (pressed_one_shot_mods) {
+                            *layer_state = osl_up_pending_used;
+                        } else {
+                            *layer_state = osl_up_unqueued;
+                            layer_off(layer);
+                        }
                     }
-                }
+                    break;
+                default:
+                    break;
             }
         }
     }
