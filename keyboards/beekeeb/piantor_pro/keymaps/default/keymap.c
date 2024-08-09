@@ -83,10 +83,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ================ mostly callum's oneshot mods
 
 typedef enum {
-    osm_up_unqueued,
-    osm_up_queued,
-    osm_down_unused,
-    osm_down_used,
+    osm_up_unqueued, // default, waiting for mod to be pressed
+    osm_down_unused, // mod pressed and held, all other presses will be with this modifier enabled, until mod released
+    osm_down_used, // other key pressed while mod is held, on mod release modifier will be disabled
+    osm_up_queued, // mod pressed and released without pressing other key, next press will have modifier enabled
 } oneshot_mod_state;
 
 oneshot_mod_state osm_shift_state = osm_up_unqueued;
@@ -96,7 +96,7 @@ oneshot_mod_state osm_gui_state = osm_up_unqueued;
 
 bool is_oneshot_cancel_key(uint16_t keycode) {
     switch (keycode) {
-        case OSL_MOD_LAYER: // cancel on double tap
+//        case OSL_MOD_LAYER: // cancel on double tap, probably not a good idea
 //        case MO(SYMBOL_LAYER):
 //        case MO(NAV_LAYER):
 //        case BSPC_OR_DEL:
@@ -121,8 +121,8 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
     }
 }
 
-void update_oneshot(
-    oneshot_mod_state *state,
+void update_oneshot_mod(
+    oneshot_mod_state *mod_state,
     uint16_t mod,
     uint16_t trigger,
     uint16_t keycode,
@@ -131,20 +131,20 @@ void update_oneshot(
     if (keycode == trigger) {
         if (record->event.pressed) {
             // Trigger keydown
-            if (*state == osm_up_unqueued) {
+            if (*mod_state == osm_up_unqueued) {
                 register_code(mod);
             }
-            *state = osm_down_unused;
+            *mod_state = osm_down_unused;
         } else {
             // Trigger keyup
-            switch (*state) {
+            switch (*mod_state) {
                 case osm_down_unused:
                     // If we didn't use the mod while trigger was held, queue it.
-                    *state = osm_up_queued;
+                    *mod_state = osm_up_queued;
                     break;
                 case osm_down_used:
                     // If we did use the mod while trigger was held, unregister it.
-                    *state = osm_up_unqueued;
+                    *mod_state = osm_up_unqueued;
                     unregister_code(mod);
 //                    uprintf("0x%04X unregister_code up trigger\n", keycode);
                     break;
@@ -154,21 +154,21 @@ void update_oneshot(
         }
     } else {
         if (record->event.pressed) {
-            if (is_oneshot_cancel_key(keycode) && *state != osm_up_unqueued) {
+            if (is_oneshot_cancel_key(keycode) && *mod_state != osm_up_unqueued) {
                 // Cancel oneshot on designated cancel keydown.
-                *state = osm_up_unqueued;
+                *mod_state = osm_up_unqueued;
                 unregister_code(mod);
 //                uprintf("0x%04X unregister_code down non-trigger\n", keycode);
             }
         } else {
             if (!is_oneshot_ignored_key(keycode)) {
                 // On non-ignored keyup, mark the oneshot as used.
-                switch (*state) {
+                switch (*mod_state) {
                     case osm_down_unused:
-                        *state = osm_down_used;
+                        *mod_state = osm_down_used;
                         break;
                     case osm_up_queued:
-                        *state = osm_up_unqueued;
+                        *mod_state = osm_up_unqueued;
                         unregister_code(mod);
 //                        uprintf("0x%04X unregister_code up non-trigger\n", keycode);
                         break;
@@ -187,9 +187,7 @@ typedef enum {
     osl_down,
 } oneshot_layer_state;
 
-oneshot_layer_state osl_sym_state = osl_up;
-oneshot_layer_state osl_num_state = osl_up;
-oneshot_layer_state osl_fn_state = osl_up;
+oneshot_layer_state osl_mod_state = osl_up;
 
 uint16_t pressed_one_shot_mods = 0;
 
@@ -208,7 +206,7 @@ bool is_oneshot_mod_key(uint16_t keycode) {
 }
 
 void update_oneshot_layer(
-    oneshot_layer_state *state,
+    oneshot_layer_state *layer_state,
     uint16_t trigger,
     uint16_t layer,
     uint16_t keycode,
@@ -218,11 +216,11 @@ void update_oneshot_layer(
         if (record->event.pressed) {
             // enable layer
             layer_on(layer);
-            *state = osl_down;
+            *layer_state = osl_down;
 //            uprintf("0x%04X layer_on\n", keycode);
         } else {
             // remember state
-            *state = osl_up;
+            *layer_state = osl_up;
         }
     } else {
         if (record->event.pressed) {
@@ -246,7 +244,7 @@ void update_oneshot_layer(
                     }
                 } else {
                     // if non-mod, disable layer if key is up
-                    if (*state == osl_up) {
+                    if (*layer_state == osl_up) {
                         layer_off(layer);
 //                        uprintf("0x%04X layer_off non-mods\n", keycode);
                     }
@@ -261,37 +259,37 @@ void update_oneshot_layer(
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 //    uprintf("keycode 0x%04X pressed: %d\n", keycode, record->event.pressed);
 
-    update_oneshot(
+    update_oneshot_mod(
         &osm_shift_state,
         KC_LSFT,
         OSM_SHFT,
         keycode,
         record
     );
-    update_oneshot(
+    update_oneshot_mod(
         &osm_ctrl_state,
         KC_LCTL,
         OSM_CTRL,
         keycode,
         record
     );
-    update_oneshot(
+    update_oneshot_mod(
         &osm_alt_state,
         KC_LALT,
         OSM_ALT,
         keycode,
         record
     );
-    update_oneshot(
+    update_oneshot_mod(
         &osm_gui_state,
-        KC_LCMD,
+        KC_LGUI,
         OSM_GUI,
         keycode,
         record
     );
 
     update_oneshot_layer(
-        &osl_sym_state,
+        &osl_mod_state,
         OSL_MOD_LAYER,
         MOD_LAYER,
         keycode,
