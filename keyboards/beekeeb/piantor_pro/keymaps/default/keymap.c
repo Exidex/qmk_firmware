@@ -57,13 +57,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [FN_LAYER] = LAYOUT_split_3x6_3(
-        XXXXXXX,            KC_MEDIA_STOP,            XXXXXXX,      XXXXXXX,      KC_MEDIA_PREV_TRACK,    KC_MEDIA_NEXT_TRACK,          KC_F12,    KC_F7,    KC_F8,    KC_F9,    XXXXXXX,    QK_BOOT,
-        KC_AUDIO_MUTE,      OSM_GUI,                  OSM_ALT,      OSM_CTRL,     OSM_SHFT,               XXXXXXX,                      KC_F11,    KC_F4,    KC_F5,    KC_F6,    XXXXXXX,    XXXXXXX,
-        XXXXXXX,            KC_MEDIA_PLAY_PAUSE,      XXXXXXX,      XXXXXXX,      KC_AUDIO_VOL_DOWN,      KC_AUDIO_VOL_UP,              KC_F10,    KC_F1,    KC_F2,    KC_F3,    XXXXXXX,    XXXXXXX,
+        XXXXXXX,   XXXXXXX,     KC_F7,    KC_F8,    KC_F9,    KC_F12,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    QK_BOOT,
+        XXXXXXX,   XXXXXXX,     KC_F4,    KC_F5,    KC_F6,    KC_F11,               XXXXXXX,     OSM_SHFT,     OSM_CTRL,     OSM_ALT,    OSM_GUI,    XXXXXXX,
+        XXXXXXX,   XXXXXXX,     KC_F1,    KC_F2,    KC_F3,    KC_F10,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,
 
         XXXXXXX, XXXXXXX, XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX
     ),
 
+// TODO disable side of this layer when mods on other side are pressed, to allow for pressing e.g. ctrl + l without releasing layer key
     [MOD_LAYER] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,    _______,            _______,    _______,    _______,    _______,    _______,    _______,
         _______,    OSM_GUI,    OSM_ALT,    OSM_CTRL,   OSM_SHFT,   _______,            _______,    OSM_SHFT,   OSM_CTRL,   OSM_ALT,    OSM_GUI,    _______,
