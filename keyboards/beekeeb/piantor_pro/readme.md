@@ -35,27 +35,27 @@ I have not seen these extensions in the wild, so I think it is worth sharing.
 
 ### Oneshot Mod Layer
 
-The keymap features custom implementation of oneshot mod keys and oneshot mod layer key that work together.
+The keymap features custom implementation of oneshot mod keys and oneshot MOD layer key that work together.
 Oneshot mod key implementation is mostly reused Callum's implementation with some additions.
 
-- Each homerow mod key is oneshot
-  - If another key is pressed while mod key is held, mod key is considered used and modifier will be turned off when mod key is released
-  - If no key is pressed the modifier is queued waiting for next key press
+- Each homerow modifier key is oneshot
+  - If another key is pressed while modifier key is held, modifier key is considered used and modifier will be turned off when modifier key is released
+  - If no key is pressed while mod was held the modifier is queued waiting for next key press
 - Separate oneshot mod layer
   - Homerow mods are accessible via this layer
   - FN and NAV layers have separate sets of homerow mods that use the same oneshot mod implementation but do not interact with mod layer
   - Layer oneshot also works the same way as mod oneshot
     - If another key is pressed while layer key is held, layer key is considered used and layer will be turned off when layer key is released
-    - If no key is pressed the layer is queued waiting for next key press
+    - If no key is pressed while the MOD layer key was held the layer is queued waiting for next key press
   - All keys of MOD layer except mods are transparent
 - All 4 homerow mods and layer work together
   - Modifiers do not interfere with each other: pressing another modifier will not fire or queue previously pressed modifiers
-  - Releasing mod key doesn't turn of the mod layer if one mod key is pressed
-    - In other words only the last released mod key disables mod layer
+  - Releasing modifier key doesn't turn of the mod layer if one modifier key is pressed
+    - In other words only the last released modifier key disables mod layer
   - While MOD layer key is held queued modifiers do not get used and stay active
   - When MOD layer key is released all active modifiers are released as well
   - MOD layer is split into 2 layers: left and right
-    - When mod key on one side is pressed the other side is disabled
+    - When modifier key on one side is pressed the other side is disabled
 - Home row mod state is reset if NAV or FN layer key is pressed
 
 All of this results into an intuitive homerow mods system where you can just press layer, mods and a key without worrying which key to release first and without misfires of mod-tap 
@@ -67,12 +67,14 @@ Symbols are mostly placed arbitrarily, the only restriction for me was to keep b
 
 CTRL + DELETE, CTRL + ENTER and CTRL + SPACE are all possible to press.
 But CTRL + DELETE and CTRL + ENTER in my setup are usually pressed multiple times and CTRL + SPACE is not.
-So I chose to place SPACE key near the mod key, because pressing it requires raising the thumb from the MOD layer key
+So I chose to place SPACE key near the MOD layer key, because pressing it requires raising the thumb from the MOD layer key
 which is not true for the other side of keyboard where DELETE and ENTER keys are.
 
 Most FN keys are located under the same number keys from symbol layer.
 
 ## Notable usage examples
+
+Note: all examples here assume modifier keys on left side are used. Also, all examples (except the last one) are pressed using one hand
 
 ### CTRL + V
 Note: MOD can be released at any step.
@@ -98,5 +100,7 @@ Note: This one is not really useful but shows how mod layer works
 - Press MOD, press and release CTRL, press and release C, press and release SHIFT, press and release V
 
 ### CTRL + L
-Note: Because L is at the place of one of the mod keys, it would have been more tedious to press when MOD layer key is held, but it was made easy by disabling the mod layer on the opposite side when mod key is pressed
+Note: Because L is at the place of one of the modifier keys, it would have been not possible 
+to press when MOD layer key is held, 
+but it was made easy by disabling the mod layer on the opposite side when modifier key is pressed
 - Press MOD, press and release CTRL, press and release L, release MOD
