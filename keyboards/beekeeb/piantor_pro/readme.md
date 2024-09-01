@@ -1,4 +1,4 @@
-A 5-layer (technically 6-layer) keymap for 42-key keyboard with 6 thumb cluster keys
+A 5-layer (technically 6-layer) keymap for 42-key keyboard with 6 thumb cluster keys that features oneshot mod layer.
 
 ![keymap](rendered_keymap.png)
 
@@ -7,7 +7,8 @@ Huge thanks to [Callum's keymap](https://github.com/callum-oakley/qmk_firmware/t
 
 Oneshot mod layer removes the unreliability of mod-tap at the expense of one more key press.
 The problem I faced with Callum's keymap is that you have to be very careful in when you release mod keys for pressing shortcuts that need to have multiple modifiers enabled.
-Idea of one shot mods is pretty simple, but it took a lot of small details to make it convenient to use.
+The main idea I kept in my head when designing this keymap is to just press keys in the right order without thinking about releasing them, and it should just work.
+Idea itself is pretty simple, but it took a lot of small details to make it convenient to use (and behave according to intuition) which made it more complex than usual keymap.
 I have not seen these extensions in the wild, so I think it is worth sharing.
 
 ## Design requirements
@@ -46,18 +47,18 @@ Oneshot mod key implementation is mostly reused Callum's implementation with som
   - Layer oneshot also works the same way as mod oneshot
     - If another key is pressed while layer key is held, layer key is considered used and layer will be turned off when layer key is released
     - If no key is pressed the layer is queued waiting for next key press
-  - All keys except mod are transparent
+  - All keys of MOD layer except mods are transparent
 - All 4 homerow mods and layer work together
-  - Modifiers do not interfere with each other: pressing another modifier will not fire or queue another modifier
+  - Modifiers do not interfere with each other: pressing another modifier will not fire or queue previously pressed modifiers
   - Releasing mod key doesn't turn of the mod layer if one mod key is pressed
     - In other words only the last released mod key disables mod layer
   - While MOD layer key is held queued modifiers do not get used and stay active
-  - When MOD key is released all active modifiers are released as well
+  - When MOD layer key is released all active modifiers are released as well
   - MOD layer is split into 2 layers: left and right
     - When mod key on one side is pressed the other side is disabled
 - Home row mod state is reset if NAV or FN layer key is pressed
 
-All of this results into an intuitive homerow mods system where you can just press layer, mods and any key without worrying which key to release first and without misfires of mod-tap 
+All of this results into an intuitive homerow mods system where you can just press layer, mods and a key without worrying which key to release first and without misfires of mod-tap 
 
 ### Other
 
