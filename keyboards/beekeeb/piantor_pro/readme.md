@@ -1,20 +1,101 @@
-# Piantor Pro
+A 5-layer (technically 6-layer) keymap for 42-key keyboard with 6 thumb cluster keys
 
-![Piantor Pro](https://i.imgur.com/UPRI64ch.jpg)
+![keymap](rendered_keymap.png)
 
-A 42 key hotswappable keyboard with RP2040.
+# Oneshot Mod Layer
+Huge thanks to [Callum's keymap](https://github.com/callum-oakley/qmk_firmware/tree/master/users/callum) for inspiration.
 
-* Keyboard Maintainer: [beekeeb](https://github.com/beekeeb)
-* Hardware Availability: [beekeeb.shop](https://beekeeb.shop)
+Oneshot mod layer removes the unreliability of mod-tap at the expense of one more key press.
+The problem I faced with Callum's keymap is that you have to be very careful in when you release mod keys for pressing shortcuts that need to have multiple modifiers enabled.
+Idea of one shot mods is pretty simple, but it took a lot of small details to make it convenient to use.
+I have not seen these extensions in the wild, so I think it is worth sharing.
 
-Make example for this keyboard (after setting up your build environment):
+## Design requirements
+- No timings
+- No delays
+- No thinking about which key to release first
+- As intuitive as possible
+  - But because there is more moving parts it may be more difficult to understand
+- All shortcuts that are possible to press on regular full size keyboard are possible to press using this keymap as well (but some may be not as convenient to use as others)
+- Multi-OS
+  - No KC_CUT, KC_COPY, KC_PASTE, etc key codes
+  - Separate mod layer for macOS (still TODO)
+- Copy, Paste, Cut are one-hand shortcuts (on left side because I am right-handed and usually have mouse in it), are easily accessible and are easy to repeat
+- No need to throw away Arrow keys muscle memory
+  - Eases transition to VIM in future
+- Avoid "specialized shortcut" keys, aka keys used only for one hyper specific action
+  - I have made an except for browser navigation but that is not technically needed for the idea to work
+- Symbols
+  - Keep brackets together
+- Avoid QK_REPEAT_KEY
+- It is possible to use various letter from european alphabets accessible via right alt
 
-    make beekeeb/piantor_pro:default
+## Description
 
-See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_tools) and the [make instructions](https://docs.qmk.fm/#/getting_started_make_guide) for more information. Brand new to QMK? Start with our [Complete Newbs Guide](https://docs.qmk.fm/#/newbs).
+### Oneshot Mod Layer
 
-## Flashing
+The keymap features custom implementation of oneshot mod keys and oneshot mod layer key that work together.
+Oneshot mod key implementation is mostly reused Callum's implementation with some additions.
 
-To enter the bootloader mode, disconnect the keyboard from the computer. While holding the BOOT button, connect the keyboard to the computer.
+- Each homerow mod key is oneshot
+  - If another key is pressed while mod key is held, mod key is considered used and modifier will be turned off when mod key is released
+  - If no key is pressed the modifier is queued waiting for next key press
+- Separate oneshot mod layer
+  - Homerow mods are accessible via this layer
+  - FN and NAV layers have separate sets of homerow mods that use the same oneshot mod implementation but do not interact with mod layer
+  - Layer oneshot also works the same way as mod oneshot
+    - If another key is pressed while layer key is held, layer key is considered used and layer will be turned off when layer key is released
+    - If no key is pressed the layer is queued waiting for next key press
+  - All keys except mod are transparent
+- All 4 homerow mods and layer work together
+  - Modifiers do not interfere with each other: pressing another modifier will not fire or queue another modifier
+  - Releasing mod key doesn't turn of the mod layer if one mod key is pressed
+    - In other words only the last released mod key disables mod layer
+  - While MOD layer key is held queued modifiers do not get used and stay active
+  - When MOD key is released all active modifiers are released as well
+  - MOD layer is split into 2 layers: left and right
+    - When mod key on one side is pressed the other side is disabled
+- Home row mod state is reset if NAV or FN layer key is pressed
 
-Run `make beekeeb/piantor_pro:default:flash` or copy the compiled uf2 firmware to the USB mass storage device.
+All of this results into an intuitive homerow mods system where you can just press layer, mods and any key without worrying which key to release first and without misfires of mod-tap 
+
+### Other
+
+Because of the size of the keyboard I managed to fit all symbols and numbers in the same layer which gave back one thumb cluster key.
+Symbols are mostly placed arbitrarily, the only restriction for me was to keep brackets together, but can probably be optimized in some way.
+
+CTRL + DELETE, CTRL + ENTER and CTRL + SPACE are all possible to press.
+But CTRL + DELETE and CTRL + ENTER in my setup are usually pressed multiple times and CTRL + SPACE is not.
+So I chose to place SPACE key near the mod key, because pressing it requires raising the thumb from the MOD layer key
+which is not true for the other side of keyboard where DELETE and ENTER keys are.
+
+Most FN keys are located under the same number keys from symbol layer.
+
+## Notable usage examples
+
+### CTRL + V
+Note: MOD can be released at any step.
+- Press and release MOD, press and release CTRL, press and release V
+- Press MOD, press and release CTRL, release MOD, press and release V
+- Press MOD, press and release CTRL, press and release V, release MOD
+
+### CTRL + V multiple times
+Note: While MOD is held, modifiers do not get used.
+- Press MOD, press and release CTRL, press and release V multiple times, release MOD
+
+### CTRL + C, CTRL + V
+
+- Press MOD, press and release CTRL, press and release C, press and release V, release MOD  
+
+### CTRL + SHIFT + ALT + F
+Note: MOD can be released at any step.
+- Press and release MOD, smash and release CTRL, SHIFT and ALT in any order, press and release F
+- Press MOD, smash and release CTRL, SHIFT and ALT in any order, press and release F, release MOD
+
+### CTRL + C, CTRL + SHIFT + V
+Note: This one is not really useful but shows how mod layer works
+- Press MOD, press and release CTRL, press and release C, press and release SHIFT, press and release V
+
+### CTRL + L
+Note: Because L is at the place of one of the mod keys, it would have been more tedious to press when MOD layer key is held, but it was made easy by disabling the mod layer on the opposite side when mod key is pressed
+- Press MOD, press and release CTRL, press and release L, release MOD
