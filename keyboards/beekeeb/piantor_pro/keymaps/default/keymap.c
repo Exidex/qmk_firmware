@@ -7,8 +7,7 @@ enum layers {
     NAV_LAYER,
     SYMBOL_LAYER,
     FN_LAYER,
-    RIGHT_MOD_LAYER,
-    LEFT_MOD_LAYER,
+    MOD_LAYER,
 };
 
 enum keycodes {
@@ -16,15 +15,10 @@ enum keycodes {
     OSL_MOD_LAYER = SAFE_RANGE,
 
     // Custom oneshot mods implementation.
-    OSM_L_SHFT,
-    OSM_L_CTRL,
-    OSM_L_ALT,
-    OSM_L_GUI,
-
-    OSM_R_SHFT,
-    OSM_R_CTRL,
-    OSM_R_ALT,
-    OSM_R_GUI,
+    OSM_SHFT,
+    OSM_CTRL,
+    OSM_ALT,
+    OSM_GUI,
 };
 
 
@@ -48,7 +42,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [NAV_LAYER] = LAYOUT_split_3x6_3(
         XXXXXXX,  XXXXXXX,      C(S(KC_TAB)),    KC_UP,      C(KC_TAB),   KC_PGUP,                               XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
-        KC_INS,   KC_HOME,      KC_LEFT,         KC_DOWN,    KC_RIGHT,    KC_END,                                XXXXXXX,    OSM_R_SHFT,    OSM_R_CTRL, OSM_R_ALT,  OSM_R_GUI,  XXXXXXX,
+        KC_INS,   KC_HOME,      KC_LEFT,         KC_DOWN,    KC_RIGHT,    KC_END,                                XXXXXXX,    OSM_SHFT,      OSM_CTRL,   OSM_ALT,    OSM_GUI,    XXXXXXX,
         XXXXXXX,  XXXXXXX,      S(KC_TAB),       KC_APP,     KC_TAB,      KC_PGDN,                               XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
 
         XXXXXXX, XXXXXXX, XXXXXXX,                XXXXXXX, MO(FN_LAYER), KC_LEFT_GUI
@@ -64,24 +58,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [FN_LAYER] = LAYOUT_split_3x6_3(
         XXXXXXX,   XXXXXXX,     KC_F7,    KC_F8,    KC_F9,    KC_F12,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    QK_BOOT,
-        XXXXXXX,   XXXXXXX,     KC_F4,    KC_F5,    KC_F6,    KC_F11,               XXXXXXX,     OSM_R_SHFT,   OSM_R_CTRL,   OSM_R_ALT,  OSM_R_GUI,  XXXXXXX,
+        XXXXXXX,   XXXXXXX,     KC_F4,    KC_F5,    KC_F6,    KC_F11,               XXXXXXX,     OSM_SHFT,     OSM_CTRL,     OSM_ALT,    OSM_GUI,  XXXXXXX,
         XXXXXXX,   XXXXXXX,     KC_F1,    KC_F2,    KC_F3,    KC_F10,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,
 
         XXXXXXX, XXXXXXX, XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX
     ),
 
-    [LEFT_MOD_LAYER] = LAYOUT_split_3x6_3(
+    [MOD_LAYER] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    OSM_L_GUI,  OSM_L_ALT,  OSM_L_CTRL, OSM_L_SHFT,   _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    OSM_GUI,    OSM_ALT,    OSM_CTRL,   OSM_SHFT,     _______,            _______,    OSM_SHFT,   OSM_CTRL,   OSM_ALT,    OSM_GUI,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
-
-        OSL_MOD_LAYER, _______, _______,                _______, _______, _______
-    ),
-
-    [RIGHT_MOD_LAYER] = LAYOUT_split_3x6_3(
-        _______,    _______,    _______,    _______,    _______,    _______,            _______,    _______,    _______,    _______,    _______,      _______,
-        _______,    _______,    _______,    _______,    _______,    _______,            _______,    OSM_R_SHFT, OSM_R_CTRL, OSM_R_ALT,  OSM_R_GUI,    _______,
-        _______,    _______,    _______,    _______,    _______,    _______,            _______,    _______,    _______,    _______,    _______,      _______,
 
         OSL_MOD_LAYER, _______, _______,                _______, _______, _______
     ),
@@ -131,14 +117,10 @@ bool is_oneshot_cancel_key(uint16_t keycode) {
 bool is_oneshot_ignored_key(uint16_t keycode) {
     switch (keycode) {
         case OSL_MOD_LAYER:
-        case OSM_R_SHFT:
-        case OSM_L_SHFT:
-        case OSM_R_CTRL:
-        case OSM_L_CTRL:
-        case OSM_R_ALT:
-        case OSM_L_ALT:
-        case OSM_R_GUI:
-        case OSM_L_GUI:
+        case OSM_SHFT:
+        case OSM_CTRL:
+        case OSM_ALT:
+        case OSM_GUI:
             return true;
         default:
             return false;
@@ -151,14 +133,11 @@ void update_oneshot_mod(
     uint16_t mod,
     uint16_t trigger,
     uint16_t keycode,
-    keyrecord_t *record,
-    uint16_t layer_to_disable
+    keyrecord_t *record
 ) {
     if (keycode == trigger) {
         if (record->event.pressed) {
             // Trigger keydown
-            layer_off(layer_to_disable); // disable other side
-
             if (*mod_state == osm_up_unqueued) {
                 register_code(mod);
             }
@@ -227,14 +206,10 @@ uint16_t pressed_one_shot_mods = 0;
 
 bool is_oneshot_mod_key(uint16_t keycode) {
     switch (keycode) {
-        case OSM_R_SHFT:
-        case OSM_L_SHFT:
-        case OSM_R_CTRL:
-        case OSM_L_CTRL:
-        case OSM_R_ALT:
-        case OSM_L_ALT:
-        case OSM_R_GUI:
-        case OSM_L_GUI:
+        case OSM_SHFT:
+        case OSM_CTRL:
+        case OSM_ALT:
+        case OSM_GUI:
             return true;
         default:
             return false;
@@ -248,16 +223,14 @@ void update_oneshot_layer(
     oneshot_mod_state *alt_state,
     oneshot_mod_state *gui_state,
     uint16_t trigger,
-    uint16_t left_layer,
-    uint16_t right_layer,
+    uint16_t layer,
     uint16_t keycode,
     keyrecord_t *record
 ) {
     if (keycode == trigger) {
         if (record->event.pressed) {
             if (*layer_state == osl_up_unqueued) {
-                layer_on(left_layer);
-                layer_on(right_layer);
+                layer_on(layer);
             }
             *layer_state = osl_down_unused;
         } else {
@@ -267,8 +240,7 @@ void update_oneshot_layer(
                     break;
                 case osl_down_used:
                     *layer_state = osl_up_unqueued;
-                    layer_off(left_layer);
-                    layer_off(right_layer);
+                    layer_off(layer);
 
                     {
                         if (*shift_state == osm_up_queued_with_layer) {
@@ -325,8 +297,7 @@ void update_oneshot_layer(
                             *layer_state = osl_up_pending_used;
                         } else {
                             *layer_state = osl_up_unqueued;
-                            layer_off(left_layer);
-                            layer_off(right_layer);
+                            layer_off(layer);
                         }
                     }
                     break;
@@ -346,76 +317,36 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         &osl_mod_state,
         &osm_shift_state,
         KC_LSFT,
-        OSM_L_SHFT,
+        OSM_SHFT,
         keycode,
-        record,
-        RIGHT_MOD_LAYER
-    );
-    update_oneshot_mod(
-        &osl_mod_state,
-        &osm_shift_state,
-        KC_LSFT,
-        OSM_R_SHFT,
-        keycode,
-        record,
-        LEFT_MOD_LAYER
+        record
     );
 
     update_oneshot_mod(
         &osl_mod_state,
         &osm_ctrl_state,
         KC_LCTL,
-        OSM_L_CTRL,
+        OSM_CTRL,
         keycode,
-        record,
-        RIGHT_MOD_LAYER
-    );
-    update_oneshot_mod(
-        &osl_mod_state,
-        &osm_ctrl_state,
-        KC_LCTL,
-        OSM_R_CTRL,
-        keycode,
-        record,
-        LEFT_MOD_LAYER
+        record
     );
 
     update_oneshot_mod(
         &osl_mod_state,
         &osm_alt_state,
         KC_LALT,
-        OSM_L_ALT,
+        OSM_ALT,
         keycode,
-        record,
-        RIGHT_MOD_LAYER
-    );
-    update_oneshot_mod(
-        &osl_mod_state,
-        &osm_alt_state,
-        KC_LALT,
-        OSM_R_ALT,
-        keycode,
-        record,
-        LEFT_MOD_LAYER
+        record
     );
 
     update_oneshot_mod(
         &osl_mod_state,
         &osm_gui_state,
         KC_LGUI,
-        OSM_L_GUI,
+        OSM_GUI,
         keycode,
-        record,
-        RIGHT_MOD_LAYER
-    );
-    update_oneshot_mod(
-        &osl_mod_state,
-        &osm_gui_state,
-        KC_LGUI,
-        OSM_R_GUI,
-        keycode,
-        record,
-        LEFT_MOD_LAYER
+        record
     );
 
 
@@ -426,8 +357,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         &osm_alt_state,
         &osm_gui_state,
         OSL_MOD_LAYER,
-        LEFT_MOD_LAYER,
-        RIGHT_MOD_LAYER,
+        MOD_LAYER,
         keycode,
         record
     );
