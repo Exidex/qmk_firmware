@@ -9,11 +9,11 @@ layers:
     - [N, M, ',', '.', '/', RSFT]
     - [MOD, NAV, SPACE, 'BSPC DEL', SYM, ENTER]
   NAV:
-    - ['', '', PREV_TAB, UP, NEXT_TAB, PG_UP]
+    - ['', '', 'PREV TAB', UP, 'NEXT TAB', 'PG UP']
     - ['', '', '', '', '', '']
     - [INS, HOME, LEFT, DOWN, RIGHT, END]
-    - ['', OSM_SHFT, OSM_CTRL, OSM_ALT, OSM_GUI, '']
-    - ['', '', PREV_FIELD, C_MENU, NEXT_FIELD, PG_DOWN]
+    - ['', 'OSM SHFT', 'OSM CTRL', 'OSM ALT', 'OSM GUI', '']
+    - ['', '', 'PREV FIELD', ' MENU', 'NEXT FIELD', 'PG DOWN']
     - ['', '', '', '', '', '']
     - - ''
       - {type: held}
@@ -38,7 +38,7 @@ layers:
     - ['', '', 'F7', 'F8', 'F9', 'F12']
     - ['', '', '', '', '', 'QK BOOT']
     - ['', '', 'F4', 'F5', 'F6', 'F11']
-    - ['', 'OSM_SHFT', 'OSM_CTRL', 'OSM_ALT', 'OSM_GUI', '']
+    - ['', 'OSM SHFT', 'OSM CTRL', 'OSM ALT', 'OSM GUI', '']
     - ['', '', 'F1', 'F2', 'F3', 'F10']
     - ['', '', '', '', '', '']
     - - ''
@@ -50,8 +50,8 @@ layers:
   MOD:
     - ['', '', '', '', '', '']
     - ['', '', '', '', '', '']
-    - ['', 'OSM_GUI', 'OSM_ALT', 'OSM_CTRL', 'OSM_SHFT', '']
-    - ['', 'OSM_SHFT', 'OSM_CTRL', 'OSM_ALT', 'OSM_GUI', '']
+    - ['', 'OSM GUI', 'OSM ALT', 'OSM CTRL', 'OSM SHFT', '']
+    - ['', 'OSM SHFT', 'OSM CTRL', 'OSM ALT', 'OSM GUI', '']
     - ['', '', '', '', '', '']
     - ['', '', '', '', '', '']
     - - {type: held}
