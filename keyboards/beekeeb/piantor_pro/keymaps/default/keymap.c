@@ -311,8 +311,34 @@ void update_oneshot_layer(
 
 // ==============
 
+//const char* oneshot_layer_state_string(oneshot_layer_state value) {
+//    switch (value) {
+//        case osl_up_unqueued: return "osl_up_unqueued";
+//        case osl_up_queued: return "osl_up_queued";
+//        case osl_up_pending_used: return "osl_up_pending_used";
+//        case osl_down_unused: return "osl_down_unused";
+//        case osl_down_pending_used: return "osl_down_pending_used";
+//        case osl_down_used: return "osl_down_used";
+//        default: return "-----";
+//    }
+//}
+//
+//const char* oneshot_mod_state_string(oneshot_mod_state value) {
+//    switch (value) {
+//        case osm_up_unqueued: return "osm_up_unqueued";
+//        case osm_down_unused: return "osm_down_unused";
+//        case osm_down_used: return "osm_down_used";
+//        case osm_up_queued: return "osm_up_queued";
+//        case osm_up_queued_with_layer: return "osm_up_queued_with_layer";
+//        default: return "-----";
+//    }
+//}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-//    uprintf("keycode 0x%04X pressed: %d\n", keycode, record->event.pressed);
+//    uprintf("\n");
+//    uprintf("\n");
+//
+//    uprintf("%s %s %s %s %s \n", oneshot_layer_state_string(osl_mod_state), oneshot_mod_state_string(osm_shift_state), oneshot_mod_state_string(osm_ctrl_state), oneshot_mod_state_string(osm_alt_state), oneshot_mod_state_string(osm_gui_state));
 
     update_oneshot_mod(
         &osl_mod_state,
@@ -362,6 +388,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         keycode,
         record
     );
+
+//    uprintf("%s %s %s %s %s \n", oneshot_layer_state_string(osl_mod_state), oneshot_mod_state_string(osm_shift_state), oneshot_mod_state_string(osm_ctrl_state), oneshot_mod_state_string(osm_alt_state), oneshot_mod_state_string(osm_gui_state));
 
     return true;
 }
