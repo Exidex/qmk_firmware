@@ -1,4 +1,4 @@
-A 5-layer (technically 6-layer) keymap for 42-key keyboard with 6 thumb cluster keys that features oneshot mod layer.
+A 5-layer keymap for 42-key keyboard with 6 thumb cluster keys with focus on easily pressing shortcuts with any modifier combination (and even all 4).
 
 ![keymap](rendered_keymap.png)
 
@@ -6,7 +6,7 @@ A 5-layer (technically 6-layer) keymap for 42-key keyboard with 6 thumb cluster 
 Huge thanks to [Callum's keymap](https://github.com/callum-oakley/qmk_firmware/tree/master/users/callum) for inspiration.
 
 Oneshot mod layer removes the unreliability of mod-tap at the expense of one more key press.
-The problem I faced with Callum's keymap is that you have to be very careful in when you release mod keys for pressing shortcuts that need to have multiple modifiers enabled.
+The problem I faced with Callum's keymap is that you have to be very careful in when you release mod keys for pressing shortcuts that require multiple modifiers.
 The main idea I kept in my head when designing this keymap is to just press keys in the right order without thinking about releasing them, and it should just work.
 Idea itself is pretty simple, but it took a lot of small details to make it convenient to use (and behave according to intuition) which made it more complex than usual keymap.
 I have not seen these extensions in the wild, so I think it is worth sharing.
@@ -14,18 +14,18 @@ I have not seen these extensions in the wild, so I think it is worth sharing.
 ## Design requirements
 - No timings
 - No delays
+- Easily press shortcuts which involve even 3 or 4 modifiers
 - No thinking about which key to release first
 - As intuitive as possible
-  - But because there is more moving parts it may be more difficult to understand
 - All shortcuts that are possible to press on regular full size keyboard are possible to press using this keymap as well (but some may be not as convenient to use as others)
 - Multi-OS
   - No KC_CUT, KC_COPY, KC_PASTE, etc key codes
   - Separate mod layer for macOS (still TODO)
 - Copy, Paste, Cut are one-hand shortcuts (on left side because I am right-handed and usually have mouse in it), are easily accessible and are easy to repeat
 - No need to throw away Arrow keys muscle memory
-  - Eases transition to VIM in future
+  - Should ease transition to Vim motions in future
 - Avoid "specialized shortcut" keys, aka keys used only for one hyper specific action
-  - I have made an except for browser navigation but that is not technically needed for the idea to work
+  - I have made an exception for browser navigation but that is not technically needed for the idea to work
 - Symbols
   - Keep brackets together
 - Avoid QK_REPEAT_KEY
@@ -50,15 +50,14 @@ Oneshot mod key implementation is mostly reused Callum's implementation with som
   - All keys of MOD layer except mods are transparent
 - All 4 homerow mods and layer work together
   - Modifiers do not interfere with each other: pressing another modifier will not fire or queue previously pressed modifiers
-  - Releasing modifier key doesn't turn of the mod layer if one modifier key is pressed
-    - In other words only the last released modifier key disables mod layer
-  - While MOD layer key is held queued modifiers do not get used and stay active
-  - When MOD layer key is released all active modifiers are released as well
-  - MOD layer is split into 2 layers: left and right
-    - When modifier key on one side is pressed the other side is disabled
+  - Releasing modifier key doesn't turn off the mod layer if at least one modifier key is still pressed
+    - In other words only the last released modifier key disables mod layer (but modifiers are still enabled while layer key is held)
+  - While MOD layer key is held, queued modifiers do not get used and stay active
+  - When MOD layer key is released all active modifiers are disabled as well
 - Home row mod state is reset if NAV or FN layer key is pressed
 
-All of this results into an intuitive homerow mods system where you can just press layer, mods and a key without worrying which key to release first and without misfires of mod-tap 
+All of this results into an intuitive homerow mods system where you can just press layer,
+mods and a key without worrying which key to release first and without misfires of mod-tap 
 
 ### Other
 
@@ -74,33 +73,27 @@ Most FN keys are located under the same number keys from symbol layer.
 
 ## Notable usage examples
 
-Note: all examples here assume modifier keys on left side are used. Also, all examples (except the last one) are pressed using one hand
+All examples here assume modifier keys on left side are used.
+Also, all examples are pressed using one hand, but it is also possible to mix which hand presses
 
 ### CTRL + V
-Note: MOD can be released at any step.
+MOD can be released at any step:
 - Press and release MOD, press and release CTRL, press and release V
 - Press MOD, press and release CTRL, release MOD, press and release V
 - Press MOD, press and release CTRL, press and release V, release MOD
 
 ### CTRL + V multiple times
-Note: While MOD is held, modifiers do not get used.
+While MOD is held, modifiers do not get used:
 - Press MOD, press and release CTRL, press and release V multiple times, release MOD
 
-### CTRL + C, CTRL + V
+### CTRL + D multiple times
+Even though D is a home row mod for CTRL, it behaves the same as previous example:
+- Press MOD, press and release CTRL, press and release D multiple times, release MOD
 
-- Press MOD, press and release CTRL, press and release C, press and release V, release MOD  
+### CTRL + C, CTRL + V
+- Press MOD, press and release CTRL, press and release C, press and release V, release MOD
 
 ### CTRL + SHIFT + ALT + F
-Note: MOD can be released at any step.
+MOD can be released at any step:
 - Press and release MOD, smash and release CTRL, SHIFT and ALT in any order, press and release F
 - Press MOD, smash and release CTRL, SHIFT and ALT in any order, press and release F, release MOD
-
-### CTRL + C, CTRL + SHIFT + V
-Note: This one is not really useful but shows how mod layer works
-- Press MOD, press and release CTRL, press and release C, press and release SHIFT, press and release V
-
-### CTRL + L
-Note: Because L is at the place of one of the modifier keys, it would have been not possible 
-to press when MOD layer key is held, 
-but it was made easy by disabling the mod layer on the opposite side when modifier key is pressed
-- Press MOD, press and release CTRL, press and release L, release MOD
