@@ -96,7 +96,7 @@ typedef enum {
     osm_down_unused, // mod pressed and held, all other presses will be with this modifier enabled, until mod released
     osm_down_used, // other key pressed while mod is held, on mod release modifier will be disabled
     osm_up_queued, // mod pressed and released without pressing other key, next press will have modifier enabled
-    osm_up_queued_with_layer, // other key pressed while layer and mod are active, next presses will have modifier enabled until layer is released
+    osm_up_queued_with_layer, // other key pressed abd released while layer and mod are active, next presses will have modifier enabled until layer is released
 } oneshot_mod_state;
 
 oneshot_mod_state osm_shift_state = osm_up_unqueued;
@@ -287,6 +287,7 @@ void update_oneshot_layer(
                             *layer_state = osl_down_pending_used;
                         } else {
                             *layer_state = osl_down_used;
+                            layer_off(layer);
                         }
                     }
                     break;
