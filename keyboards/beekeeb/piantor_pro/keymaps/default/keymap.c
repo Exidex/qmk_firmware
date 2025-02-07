@@ -10,6 +10,8 @@ enum layers {
     MOD_MARKER_LAYER,
     MOD_LAYER_LEFT,
     MOD_LAYER_RIGHT,
+    MOD_LAYER_MACOS_LEFT,
+    MOD_LAYER_MACOS_RIGHT,
 };
 
 enum keycodes {
@@ -21,6 +23,9 @@ enum keycodes {
     OSM_CTRL,
     OSM_ALT,
     OSM_GUI,
+
+    MACOS_ENABLE,
+    MACOS_DISABLE,
 };
 
 
@@ -59,9 +64,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [FN_LAYER] = LAYOUT_split_3x6_3(
-        XXXXXXX,   XXXXXXX,     KC_F7,    KC_F8,    KC_F9,    KC_F12,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    QK_BOOT,
-        XXXXXXX,   XXXXXXX,     KC_F4,    KC_F5,    KC_F6,    KC_F11,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,
-        XXXXXXX,   XXXXXXX,     KC_F1,    KC_F2,    KC_F3,    KC_F10,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,
+        XXXXXXX,   XXXXXXX,     KC_F7,    KC_F8,    KC_F9,    KC_F12,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,          QK_BOOT,
+        XXXXXXX,   XXXXXXX,     KC_F4,    KC_F5,    KC_F6,    KC_F11,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,          XXXXXXX,
+        XXXXXXX,   XXXXXXX,     KC_F1,    KC_F2,    KC_F3,    KC_F10,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    MACOS_DISABLE,    MACOS_ENABLE,
 
         XXXXXXX, XXXXXXX, XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX
     ),
@@ -85,6 +90,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [MOD_LAYER_RIGHT] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    OSM_SHFT,   OSM_CTRL,   OSM_ALT,    OSM_GUI,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+
+        OSL_MOD_LAYER, _______, _______,                _______, _______, _______
+    ),
+
+    [MOD_LAYER_MACOS_LEFT] = LAYOUT_split_3x6_3(
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    OSM_CTRL,   OSM_ALT,    OSM_GUI,    OSM_SHFT,     _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+
+        OSL_MOD_LAYER, _______, _______,                _______, _______, _______
+    ),
+
+    [MOD_LAYER_MACOS_RIGHT] = LAYOUT_split_3x6_3(
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    OSM_SHFT,   OSM_GUI,    OSM_ALT,    OSM_CTRL,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
 
         OSL_MOD_LAYER, _______, _______,                _______, _______, _______
@@ -121,6 +142,8 @@ oneshot_mod_state osm_shift_state = osm_up_unqueued;
 oneshot_mod_state osm_ctrl_state = osm_up_unqueued;
 oneshot_mod_state osm_alt_state = osm_up_unqueued;
 oneshot_mod_state osm_gui_state = osm_up_unqueued;
+
+bool macos_modifiers = false;
 
 bool is_oneshot_cancel_key(uint16_t keycode) {
     switch (keycode) {
@@ -358,6 +381,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 //
 //    uprintf("%s %s %s %s %s \n", oneshot_layer_state_string(osl_mod_state), oneshot_mod_state_string(osm_shift_state), oneshot_mod_state_string(osm_ctrl_state), oneshot_mod_state_string(osm_alt_state), oneshot_mod_state_string(osm_gui_state));
 
+    if (keycode == MACOS_ENABLE && record->event.pressed) {
+        macos_modifiers = true;
+    }
+
+    if (keycode == MACOS_DISABLE && record->event.pressed) {
+        macos_modifiers = false;
+    }
+
     update_oneshot_mod(
         &osl_mod_state,
         &osm_shift_state,
@@ -421,12 +452,21 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     layer_state_t new_state = state;
 
     bool right = IS_LAYER_ON_STATE(state, MOD_MARKER_LAYER) || IS_LAYER_ON_STATE(state, FN_LAYER) || IS_LAYER_ON_STATE(state, NAV_LAYER);
-
-    new_state = set_layer_state(new_state, right, MOD_LAYER_RIGHT);
-
     bool left = IS_LAYER_ON_STATE(state, MOD_MARKER_LAYER);
 
-    new_state = set_layer_state(new_state, left, MOD_LAYER_LEFT);
+    if (macos_modifiers) {
+        new_state = set_layer_state(new_state, false, MOD_LAYER_RIGHT);
+        new_state = set_layer_state(new_state, false, MOD_LAYER_RIGHT);
+
+        new_state = set_layer_state(new_state, right, MOD_LAYER_MACOS_RIGHT);
+        new_state = set_layer_state(new_state, left, MOD_LAYER_MACOS_LEFT);
+    } else {
+        new_state = set_layer_state(new_state, false, MOD_LAYER_MACOS_RIGHT);
+        new_state = set_layer_state(new_state, false, MOD_LAYER_MACOS_LEFT);
+
+        new_state = set_layer_state(new_state, right, MOD_LAYER_RIGHT);
+        new_state = set_layer_state(new_state, left, MOD_LAYER_LEFT);
+    }
 
     return new_state;
 }
