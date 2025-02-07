@@ -7,7 +7,9 @@ enum layers {
     NAV_LAYER,
     SYMBOL_LAYER,
     FN_LAYER,
-    MOD_LAYER,
+    MOD_MARKER_LAYER,
+    MOD_LAYER_LEFT,
+    MOD_LAYER_RIGHT,
 };
 
 enum keycodes {
@@ -58,15 +60,31 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [FN_LAYER] = LAYOUT_split_3x6_3(
         XXXXXXX,   XXXXXXX,     KC_F7,    KC_F8,    KC_F9,    KC_F12,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    QK_BOOT,
-        XXXXXXX,   XXXXXXX,     KC_F4,    KC_F5,    KC_F6,    KC_F11,               XXXXXXX,     OSM_SHFT,     OSM_CTRL,     OSM_ALT,    OSM_GUI,  XXXXXXX,
+        XXXXXXX,   XXXXXXX,     KC_F4,    KC_F5,    KC_F6,    KC_F11,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,
         XXXXXXX,   XXXXXXX,     KC_F1,    KC_F2,    KC_F3,    KC_F10,               XXXXXXX,     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,
 
         XXXXXXX, XXXXXXX, XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX
     ),
 
-    [MOD_LAYER] = LAYOUT_split_3x6_3(
+    [MOD_MARKER_LAYER] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    OSM_GUI,    OSM_ALT,    OSM_CTRL,   OSM_SHFT,     _______,            _______,    OSM_SHFT,   OSM_CTRL,   OSM_ALT,    OSM_GUI,    _______,
+        _______,    _______,    _______,    _______,    _______,     _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+
+        _______, _______, _______,                _______, _______, _______
+    ),
+
+    [MOD_LAYER_LEFT] = LAYOUT_split_3x6_3(
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    OSM_GUI,    OSM_ALT,    OSM_CTRL,   OSM_SHFT,     _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+
+        OSL_MOD_LAYER, _______, _______,                _______, _______, _______
+    ),
+
+    [MOD_LAYER_RIGHT] = LAYOUT_split_3x6_3(
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    OSM_SHFT,   OSM_CTRL,   OSM_ALT,    OSM_GUI,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
 
         OSL_MOD_LAYER, _______, _______,                _______, _______, _______
@@ -384,7 +402,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         &osm_alt_state,
         &osm_gui_state,
         OSL_MOD_LAYER,
-        MOD_LAYER,
+        MOD_MARKER_LAYER,
         keycode,
         record
     );
@@ -392,4 +410,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 //    uprintf("%s %s %s %s %s \n", oneshot_layer_state_string(osl_mod_state), oneshot_mod_state_string(osm_shift_state), oneshot_mod_state_string(osm_ctrl_state), oneshot_mod_state_string(osm_alt_state), oneshot_mod_state_string(osm_gui_state));
 
     return true;
+}
+
+layer_state_t set_layer_state(layer_state_t state, bool check, uint8_t layer) {
+    layer_state_t mask = (layer_state_t) 1 << layer;
+    return check ? (state | mask) : (state & ~mask);
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    layer_state_t new_state = state;
+
+    bool right = IS_LAYER_ON_STATE(state, MOD_MARKER_LAYER) || IS_LAYER_ON_STATE(state, FN_LAYER) || IS_LAYER_ON_STATE(state, NAV_LAYER);
+
+    new_state = set_layer_state(new_state, right, MOD_LAYER_RIGHT);
+
+    bool left = IS_LAYER_ON_STATE(state, MOD_MARKER_LAYER);
+
+    new_state = set_layer_state(new_state, left, MOD_LAYER_LEFT);
+
+    return new_state;
 }
