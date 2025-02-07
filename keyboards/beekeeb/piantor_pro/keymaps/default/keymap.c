@@ -52,7 +52,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XXXXXXX,  KC_HOME,      KC_LEFT,         KC_DOWN,    KC_RIGHT,    KC_END,                                XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
         XXXXXXX,  XXXXXXX,      S(KC_TAB),       KC_APP,     KC_TAB,      KC_PGDN,                               XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
 
-        XXXXXXX, XXXXXXX, XXXXXXX,                _______, MO(FN_LAYER), KC_LEFT_GUI
+        XXXXXXX, XXXXXXX, KC_SPC,                _______, MO(FN_LAYER), KC_LEFT_GUI
     ),
 
     [SYMBOL_LAYER] = LAYOUT_split_3x6_3(
