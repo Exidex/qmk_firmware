@@ -5,6 +5,7 @@
 enum layers {
     DEFAULT_LAYER,
     NAV_LAYER,
+    NAV_LAYER_MACOS,
     SYMBOL_LAYER,
     FN_LAYER,
     MOD_MARKER_LAYER,
@@ -44,6 +45,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XXXXXXX,  XXXXXXX,      S(KC_TAB),       KC_APP,     KC_TAB,      KC_PGDN,                               XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
 
         XXXXXXX, XXXXXXX, KC_SPC,                KC_DEL, MO(FN_LAYER), KC_LEFT_GUI
+    ),
+
+    [NAV_LAYER_MACOS] = LAYOUT_split_3x6_3(
+        _______,    _______,    _______,    _______,        _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    _______,        _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    G(KC_ENTER),    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+
+        _______, _______, _______,                _______, _______, _______
     ),
 
     [SYMBOL_LAYER] = LAYOUT_split_3x6_3(
@@ -446,17 +455,24 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     bool left = IS_LAYER_ON_STATE(state, MOD_MARKER_LAYER);
 
     if (macos_modifiers) {
+        // reset
         new_state = set_layer_state(new_state, false, MOD_LAYER_RIGHT);
-        new_state = set_layer_state(new_state, false, MOD_LAYER_RIGHT);
+        new_state = set_layer_state(new_state, false, MOD_LAYER_LEFT);
 
         new_state = set_layer_state(new_state, right, MOD_LAYER_MACOS_RIGHT);
         new_state = set_layer_state(new_state, left, MOD_LAYER_MACOS_LEFT);
     } else {
+        // reset
         new_state = set_layer_state(new_state, false, MOD_LAYER_MACOS_RIGHT);
         new_state = set_layer_state(new_state, false, MOD_LAYER_MACOS_LEFT);
 
         new_state = set_layer_state(new_state, right, MOD_LAYER_RIGHT);
         new_state = set_layer_state(new_state, left, MOD_LAYER_LEFT);
+    }
+
+    if (macos_modifiers) {
+        bool nav  = IS_LAYER_ON_STATE(state, NAV_LAYER);
+        new_state = set_layer_state(new_state, nav, NAV_LAYER_MACOS);
     }
 
     return new_state;
