@@ -29,22 +29,13 @@ enum keycodes {
 };
 
 
-#define BSPC_OR_DEL (KC_BSPC) // key code + key override
-const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
-
-const key_override_t **key_overrides = (const key_override_t *[]){
-    &delete_key_override,
-    NULL // terminate the array
-};
-
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [DEFAULT_LAYER] = LAYOUT_split_3x6_3(
         KC_TAB,      KC_Q,         KC_W,          KC_E,         KC_R,            KC_T,                               KC_Y,    KC_U,         KC_I,         KC_O,         KC_P,            KC_RALT,
         KC_ESCAPE,   KC_A,         KC_S,          KC_D,         KC_F,            KC_G,                               KC_H,    KC_J,         KC_K,         KC_L,         KC_SCLN,         LM(NAV_LAYER, MOD_LCTL | MOD_LALT | MOD_LGUI),
         KC_LSFT,     KC_Z,         KC_X,          KC_C,         KC_V,            KC_B,                               KC_N,    KC_M,         KC_COMM,      KC_DOT,       KC_SLSH,         KC_LSFT,
 
-        OSL_MOD_LAYER, MO(NAV_LAYER), KC_SPC,                 BSPC_OR_DEL, MO(SYMBOL_LAYER), KC_ENT
+        OSL_MOD_LAYER, MO(NAV_LAYER), KC_SPC,                 KC_BSPC, MO(SYMBOL_LAYER), KC_ENT
     ),
 
     [NAV_LAYER] = LAYOUT_split_3x6_3(
@@ -52,7 +43,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XXXXXXX,  KC_HOME,      KC_LEFT,         KC_DOWN,    KC_RIGHT,    KC_END,                                XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
         XXXXXXX,  XXXXXXX,      S(KC_TAB),       KC_APP,     KC_TAB,      KC_PGDN,                               XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,
 
-        XXXXXXX, XXXXXXX, KC_SPC,                _______, MO(FN_LAYER), KC_LEFT_GUI
+        XXXXXXX, XXXXXXX, KC_SPC,                KC_DEL, MO(FN_LAYER), KC_LEFT_GUI
     ),
 
     [SYMBOL_LAYER] = LAYOUT_split_3x6_3(
