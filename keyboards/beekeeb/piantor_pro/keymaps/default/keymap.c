@@ -24,7 +24,8 @@ enum keycodes {
     // Custom oneshot mods implementation.
     OSM_SHFT,
     OSM_CTRL,
-    OSM_ALT,
+    OSM_LALT,
+    OSM_RALT,
     OSM_GUI,
 
     MACOS_ENABLE,
@@ -34,7 +35,7 @@ enum keycodes {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [DEFAULT_LAYER] = LAYOUT_split_3x6_3(
-        KC_TAB,      KC_Q,         KC_W,          KC_E,         KC_R,            KC_T,                               KC_Y,    KC_U,         KC_I,         KC_O,         KC_P,            KC_RALT,
+        KC_TAB,      KC_Q,         KC_W,          KC_E,         KC_R,            KC_T,                               KC_Y,    KC_U,         KC_I,         KC_O,         KC_P,            XXXXXXX,
         KC_ESCAPE,   KC_A,         KC_S,          KC_D,         KC_F,            KC_G,                               KC_H,    KC_J,         KC_K,         KC_L,         KC_SCLN,         KC_DEL,
         XXXXXXX,     KC_Z,         KC_X,          KC_C,         KC_V,            KC_B,                               KC_N,    KC_M,         KC_COMM,      KC_DOT,       KC_SLSH,         XXXXXXX,
 
@@ -83,7 +84,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [MOD_LAYER_LEFT] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    OSM_GUI,    OSM_ALT,    OSM_CTRL,   OSM_SHFT,     _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    OSM_GUI,    OSM_LALT,    OSM_CTRL,   OSM_SHFT,     _______,            _______,    _______,    _______,    _______,    _______,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
 
         _______, _______, _______,                _______, _______, _______
@@ -91,7 +92,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [MOD_LAYER_RIGHT] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    _______,    _______,    _______,    _______,      _______,            _______,    OSM_SHFT,   OSM_CTRL,   OSM_ALT,    OSM_GUI,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    OSM_SHFT,   OSM_CTRL,   OSM_RALT,    OSM_GUI,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
 
         _______, _______, _______,                _______, _______, _______
@@ -99,7 +100,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [MOD_LAYER_MACOS_LEFT] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    OSM_CTRL,   OSM_ALT,    OSM_GUI,    OSM_SHFT,     _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    OSM_CTRL,   OSM_LALT,    OSM_GUI,    OSM_SHFT,     _______,            _______,    _______,    _______,    _______,    _______,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
 
         _______, _______, _______,                _______, _______, _______
@@ -107,7 +108,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [MOD_LAYER_MACOS_RIGHT] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    _______,    _______,    _______,    _______,      _______,            _______,    OSM_SHFT,   OSM_GUI,    OSM_ALT,    OSM_CTRL,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    OSM_SHFT,   OSM_GUI,    OSM_RALT,    OSM_CTRL,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
 
         _______, _______, _______,                _______, _______, _______
@@ -158,7 +159,8 @@ typedef enum {
 
 oneshot_mod_state osm_shift_state = osm_up_unqueued;
 oneshot_mod_state osm_ctrl_state = osm_up_unqueued;
-oneshot_mod_state osm_alt_state = osm_up_unqueued;
+oneshot_mod_state osm_l_alt_state = osm_up_unqueued;
+oneshot_mod_state osm_r_alt_state = osm_up_unqueued;
 oneshot_mod_state osm_gui_state = osm_up_unqueued;
 
 bool macos_modifiers = false;
@@ -178,7 +180,8 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
         case OSL_MOD_LAYER:
         case OSM_SHFT:
         case OSM_CTRL:
-        case OSM_ALT:
+        case OSM_LALT:
+        case OSM_RALT:
         case OSM_GUI:
             return true;
         default:
@@ -267,7 +270,8 @@ bool is_oneshot_mod_key(uint16_t keycode) {
     switch (keycode) {
         case OSM_SHFT:
         case OSM_CTRL:
-        case OSM_ALT:
+        case OSM_LALT:
+        case OSM_RALT:
         case OSM_GUI:
             return true;
         default:
@@ -279,7 +283,8 @@ void update_oneshot_layer(
     oneshot_layer_state *layer_state,
     oneshot_mod_state *shift_state,
     oneshot_mod_state *ctrl_state,
-    oneshot_mod_state *alt_state,
+    oneshot_mod_state *l_alt_state,
+    oneshot_mod_state *r_alt_state,
     oneshot_mod_state *gui_state,
     uint16_t trigger,
     uint16_t layer,
@@ -321,9 +326,13 @@ void update_oneshot_layer(
                             *ctrl_state = osm_up_unqueued;
                             unregister_code(KC_LCTL);
                         }
-                        if (*alt_state == osm_up_queued_with_layer) {
-                            *alt_state = osm_up_unqueued;
+                        if (*l_alt_state == osm_up_queued_with_layer) {
+                            *l_alt_state = osm_up_unqueued;
                             unregister_code(KC_LALT);
+                        }
+                        if (*r_alt_state == osm_up_queued_with_layer) {
+                            *r_alt_state = osm_up_unqueued;
+                            unregister_code(KC_RALT);
                         }
                         if (*gui_state == osm_up_queued_with_layer) {
                             *gui_state = osm_up_unqueued;
@@ -438,9 +447,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     update_oneshot_mod(
         &osl_mod_state,
-        &osm_alt_state,
+        &osm_l_alt_state,
         KC_LALT,
-        OSM_ALT,
+        OSM_LALT,
+        keycode,
+        record
+    );
+
+    update_oneshot_mod(
+        &osl_mod_state,
+        &osm_r_alt_state,
+        KC_RALT,
+        OSM_RALT,
         keycode,
         record
     );
@@ -459,7 +477,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         &osl_mod_state,
         &osm_shift_state,
         &osm_ctrl_state,
-        &osm_alt_state,
+        &osm_l_alt_state,
+        &osm_r_alt_state,
         &osm_gui_state,
         OSL_MOD_LAYER,
         MOD_MARKER_LAYER,
