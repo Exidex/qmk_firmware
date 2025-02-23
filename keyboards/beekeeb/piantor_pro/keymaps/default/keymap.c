@@ -13,6 +13,8 @@ enum layers {
     MOD_LAYER_RIGHT,
     MOD_LAYER_MACOS_LEFT,
     MOD_LAYER_MACOS_RIGHT,
+    MOD_LAYER_PLAIN,
+    MOD_LAYER_PLAIN_MACOS,
 };
 
 enum keycodes {
@@ -106,6 +108,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [MOD_LAYER_MACOS_RIGHT] = LAYOUT_split_3x6_3(
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    OSM_SHFT,   OSM_GUI,    OSM_ALT,    OSM_CTRL,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+
+        _______, _______, _______,                _______, _______, _______
+    ),
+
+    [MOD_LAYER_PLAIN] = LAYOUT_split_3x6_3(
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    KC_LGUI,    KC_LALT,    KC_LCTL,    KC_LSFT,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+
+        _______, _______, _______,                _______, _______, _______
+    ),
+
+    [MOD_LAYER_PLAIN_MACOS] = LAYOUT_split_3x6_3(
+        _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    KC_LCTL,    KC_LALT,    KC_LGUI,    KC_LSFT,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
         _______,    _______,    _______,    _______,    _______,      _______,            _______,    _______,    _______,    _______,    _______,    _______,
 
         _______, _______, _______,                _______, _______, _______
@@ -270,10 +288,20 @@ void update_oneshot_layer(
 ) {
     if (keycode == trigger) {
         if (record->event.pressed) {
-            if (*layer_state == osl_up_unqueued) {
-                layer_on(layer);
+            switch (*layer_state) {
+                case osl_up_unqueued:
+                    layer_on(layer);
+                    *layer_state = osl_down_unused;
+                    break;
+                case osl_up_queued:
+                    // tap dance to enable plain mod layer
+                    layer_on(MOD_LAYER_PLAIN);
+                    *layer_state = osl_down_used;
+                    break;
+                default:
+                    *layer_state = osl_down_unused;
+                    break;
             }
-            *layer_state = osl_down_unused;
         } else {
             switch (*layer_state) {
                 case osl_down_unused:
@@ -282,6 +310,7 @@ void update_oneshot_layer(
                 case osl_down_used:
                     *layer_state = osl_up_unqueued;
                     layer_off(layer);
+                    layer_off(MOD_LAYER_PLAIN);
 
                     {
                         if (*shift_state == osm_up_queued_with_layer) {
@@ -475,6 +504,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         new_state = set_layer_state(new_state, nav, NAV_LAYER_MACOS);
     } else {
         new_state = set_layer_state(new_state, false, NAV_LAYER_MACOS);
+    }
+
+    if (macos_modifiers) {
+        bool plain = IS_LAYER_ON_STATE(state, MOD_LAYER_PLAIN);
+        new_state = set_layer_state(new_state, plain, MOD_LAYER_PLAIN_MACOS);
+    } else {
+        new_state = set_layer_state(new_state, false, MOD_LAYER_PLAIN_MACOS);
     }
 
     return new_state;
