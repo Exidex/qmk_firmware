@@ -473,6 +473,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     if (macos_modifiers) {
         bool nav  = IS_LAYER_ON_STATE(state, NAV_LAYER);
         new_state = set_layer_state(new_state, nav, NAV_LAYER_MACOS);
+    } else {
+        new_state = set_layer_state(new_state, false, NAV_LAYER_MACOS);
     }
 
     return new_state;
