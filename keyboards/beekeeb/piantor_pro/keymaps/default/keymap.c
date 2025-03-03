@@ -37,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [DEFAULT_LAYER] = LAYOUT_split_3x6_3(
         KC_TAB,      KC_Q,         KC_W,          KC_E,         KC_R,            KC_T,                               KC_Y,    KC_U,         KC_I,         KC_O,         KC_P,            XXXXXXX,
         KC_ESCAPE,   KC_A,         KC_S,          KC_D,         KC_F,            KC_G,                               KC_H,    KC_J,         KC_K,         KC_L,         KC_SCLN,         KC_DEL,
-        XXXXXXX,     KC_Z,         KC_X,          KC_C,         KC_V,            KC_B,                               KC_N,    KC_M,         KC_COMM,      KC_DOT,       KC_SLSH,         XXXXXXX,
+        MO(MOD_LAYER_PLAIN),     KC_Z,         KC_X,          KC_C,         KC_V,            KC_B,                               KC_N,    KC_M,         KC_COMM,      KC_DOT,       KC_SLSH,         XXXXXXX,
 
         OSL_MOD_LAYER, MO(NAV_LAYER), KC_SPC,                 KC_BSPC, MO(SYMBOL_LAYER), KC_ENT
     ),
@@ -293,20 +293,10 @@ void update_oneshot_layer(
 ) {
     if (keycode == trigger) {
         if (record->event.pressed) {
-            switch (*layer_state) {
-                case osl_up_unqueued:
-                    layer_on(layer);
-                    *layer_state = osl_down_unused;
-                    break;
-                case osl_up_queued:
-                    // tap dance to enable plain mod layer
-                    layer_on(MOD_LAYER_PLAIN);
-                    *layer_state = osl_down_used;
-                    break;
-                default:
-                    *layer_state = osl_down_unused;
-                    break;
+            if (*layer_state == osl_up_unqueued) {
+                layer_on(layer);
             }
+            *layer_state = osl_down_unused;
         } else {
             switch (*layer_state) {
                 case osl_down_unused:
@@ -315,7 +305,6 @@ void update_oneshot_layer(
                 case osl_down_used:
                     *layer_state = osl_up_unqueued;
                     layer_off(layer);
-                    layer_off(MOD_LAYER_PLAIN);
 
                     {
                         if (*shift_state == osm_up_queued_with_layer) {
