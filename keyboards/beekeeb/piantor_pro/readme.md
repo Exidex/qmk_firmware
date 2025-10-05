@@ -20,7 +20,7 @@ I have not seen these extensions in the wild, so I think it is worth sharing.
 - All shortcuts that are possible to press on regular full size keyboard are possible to press using this keymap as well (but some may be not as convenient to use as others)
 - Multi-OS
   - No KC_CUT, KC_COPY, KC_PASTE, etc key codes
-  - Separate mod layer for macOS (still TODO)
+  - Separate mod layer for macOS home row
 - Copy, Paste, Cut are one-hand shortcuts (on left side because I am right-handed and usually have mouse in it), are easily accessible and are easy to repeat
 - No need to throw away Arrow keys muscle memory
   - Should ease transition to Vim motions in future
