@@ -1,18 +1,20 @@
-layout: {qmk_keyboard: beekeeb/piantor_pro, qmk_layout: LAYOUT_split_3x6_3}
+layout:
+  qmk_keyboard: beekeeb/piantor_pro
+  layout_name: LAYOUT_split_3x6_3
 layers:
   DEFAULT:
     - [TAB, Q, W, E, R, T]
-    - [Y, U, I, O, P, RALT]
+    - [Y, U, I, O, P, '']
     - [ESC, A, S, D, F, G]
-    - [H, J, K, L, ';', '']
-    - [LSFT, Z, X, C, V, B]
-    - [N, M, ',', '.', '/', RSFT]
-    - [MOD, NAV, SPACE, 'BSPC DEL', SYM, ENTER]
+    - [H, J, K, L, ';', DEL]
+    - ['MOMENT MOD', Z, X, C, V, B]
+    - [N, M, ',', '.', '/', '']
+    - ['OSM MOD', NAV, SPACE, BSPC, SYM, ENTER]
   NAV:
-    - ['', '', 'PREV TAB', UP, 'NEXT TAB', 'PG UP']
+    - ['', 'INS', 'PREV TAB', UP, 'NEXT TAB', 'PG UP']
     - ['', '', '', '', '', '']
-    - [INS, HOME, LEFT, DOWN, RIGHT, END]
-    - ['', 'OSM SHFT', 'OSM CTRL', 'OSM ALT', 'OSM GUI', '']
+    - ['', HOME, LEFT, DOWN, RIGHT, END]
+    - ['', '', '', '', '', '']
     - ['', '', 'PREV FIELD', ' MENU', 'NEXT FIELD', 'PG DOWN']
     - ['', '', '', '', '', '']
     - - ''
@@ -20,14 +22,14 @@ layers:
       - ''
       - ''
       - FN
-      - LGUI
+      - ''
   SYM:
     - ['!', '@', '7', '8', '9', '&']
-    - ['`', '(', ')', '{', '}', '|']
+    - ['`', '-', '(', ')', '', '|']
     - ['#', '$', '4', '5', '6', '0']
-    - ['''', '[', ']', '<', '>', '~']
+    - ['"', '_', '{', '}', '', '~']
     - ['%', '^', '1', '2', '3', '*']
-    - ['"', '_', '+', '=', '\', '-']
+    - ['''', '=', '[', ']', '\', '+']
     - - MOD
       - FN
       - ''
@@ -38,20 +40,33 @@ layers:
     - ['', '', 'F7', 'F8', 'F9', 'F12']
     - ['', '', '', '', '', 'QK BOOT']
     - ['', '', 'F4', 'F5', 'F6', 'F11']
-    - ['', 'OSM SHFT', 'OSM CTRL', 'OSM ALT', 'OSM GUI', '']
-    - ['', '', 'F1', 'F2', 'F3', 'F10']
     - ['', '', '', '', '', '']
+    - ['', '', 'F1', 'F2', 'F3', 'F10']
+    - ['', '', '', '', 'MACOS OFF', 'MACOS ON']
     - - ''
       - {type: held}
       - ''
       - ''
       - {type: held}
       - ''
-  MOD:
+  MOD LINUX:
     - ['', '', '', '', '', '']
     - ['', '', '', '', '', '']
-    - ['', 'OSM GUI', 'OSM ALT', 'OSM CTRL', 'OSM SHFT', '']
-    - ['', 'OSM SHFT', 'OSM CTRL', 'OSM ALT', 'OSM GUI', '']
+    - ['', 'GUI', 'ALT', 'CTRL', 'SHIFT', 'RALT']
+    - ['', 'SHIFT', 'CTRL', 'ALT', 'GUI', '']
+    - ['', '', '', '', '', '']
+    - ['', '', '', '', '', '']
+    - - {type: held}
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+  MOD MACOS:
+    - ['', '', '', '', '', '']
+    - ['', '', '', '', '', '']
+    - ['', 'CTRL', 'ALT', 'GUI', 'SHIFT', 'RALT']
+    - ['', 'SHIFT', 'GUI', 'ALT', 'CTRL', '']
     - ['', '', '', '', '', '']
     - ['', '', '', '', '', '']
     - - {type: held}
